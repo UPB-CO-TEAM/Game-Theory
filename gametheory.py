@@ -1,7 +1,7 @@
 import streamlit as st
 import numpy as np
 import pandas as pd
-from simplex import f, pregateste_forma_standard, ruleaza_iteratii_simplex, validare_solutie
+from simplex import f, pregateste_forma_standard, ruleaza_iteratii_simplex
 
 # --- CONFIGURARE PAGINA & DESIGN ---
 st.set_page_config(page_title="Teoria Jocurilor", layout="wide")
@@ -85,9 +85,20 @@ n_linii = st.sidebar.number_input("Strategii Jucător A (Linii)", 2, 6, 3)
 n_coloane = st.sidebar.number_input("Strategii Jucător B (Coloane)", 2, 6, 3)
 
 st.markdown("<h3 style='color: #CE93D8;'>1. Definirea Matricei de Câștig Q</h3>", unsafe_allow_html=True)
-st.info("Introduceți valorile matricei. Jucătorul A câștigă, Jucătorul B pierde.")
+st.info("Introduceți valorile matricei. Am preîncărcat problema implicită din curs.")
+
+# Incarcare Matrice Default ceruta de tine
+matrice_default = [
+    [1, 1, 2],
+    [3, 2, 1],
+    [2, 4, 5]
+]
 
 input_data = np.zeros((n_linii, n_coloane))
+for i in range(min(n_linii, len(matrice_default))):
+    for j in range(min(n_coloane, len(matrice_default[0]))):
+        input_data[i, j] = matrice_default[i][j]
+
 df_edit = pd.DataFrame(input_data, 
                        columns=[f"b{j+1}" for j in range(n_coloane)], 
                        index=[f"a{i+1}" for i in range(n_linii)])
@@ -97,25 +108,29 @@ Q = edited_df.values
 if st.button("🚀 Calculează Soluția Optimă", type="primary", use_container_width=True):
     st.divider()
     
+    # --- PASUL 1: Strategii Pure ---
     st.markdown("<h3 style='color: #CE93D8;'>2. Pasul 1: Analiza în strategii pure</h3>", unsafe_allow_html=True)
     are_sa, val_sa, pos, alpha, beta = analiza_strategii_pure(Q)
+    v1 = np.max(alpha)
+    v2 = np.min(beta)
     
     col1, col2 = st.columns(2)
     with col1:
         st.write("**Vectorul minimelor pe linii (α):**")
         st.write([f(x) for x in alpha])
-        st.write(f"➡️ **Valoarea inferioară (Maximin) $v_1 = {f(np.max(alpha))}$**")
+        st.write(f"➡️ **Valoarea inferioară (Maximin) $v_1 = {f(v1)}$**")
     with col2:
         st.write("**Vectorul maximelor pe coloane (β):**")
         st.write([f(x) for x in beta])
-        st.write(f"➡️ **Valoarea superioară (Minimax) $v_2 = {f(np.min(beta))}$**")
+        st.write(f"➡️ **Valoarea superioară (Minimax) $v_2 = {f(v2)}$**")
 
     if are_sa:
         st.success(f"✅ PUNCT ȘA DETECTAT la poziția (a{pos[0]+1}, b{pos[1]+1})")
-        st.write(f"**Soluția optimă (strategii pure):** Jucătorul A joacă mereu $a_{pos[0]+1}$, Jucătorul B joacă $b_{pos[1]+1}$.")
+        st.write(f"**Soluția optimă:** Jucătorul A joacă mereu $a_{pos[0]+1}$, Jucătorul B joacă $b_{pos[1]+1}$.")
         st.metric("Valoarea Jocului (v)", f(val_sa))
     else:
-        st.warning("⚠️ $v_1 < v_2$: Jocul nu are punct șa. Trecem la Strategii Mixte prin Programare Liniară.")
+        # --- PASUL 2: Strategii Mixte ---
+        st.warning(f"⚠️ $v_1 ({f(v1)}) < v_2 ({f(v2)})$: Jocul nu are punct șa. Trecem la Strategii Mixte (Simplex).")
         
         k = 0
         if np.min(Q) <= 0:
@@ -131,20 +146,12 @@ if st.button("🚀 Calculează Soluția Optimă", type="primary", use_container_
         semne = ['<='] * n_linii
         tip_x = ['>=0'] * n_coloane
         
-        # PREGATIREA
         TS_init, b_lucru, Cj_std, nume_v, baza_init, mapare = pregateste_forma_standard(A_pl, b_pl, c_pl, semne, tip_x, 'MAX', 1000)
         
-        # BACKUP PENTRU VALIDARE V3
-        A_prim_init = TS_init.copy()
-        b_backup = b_lucru.copy()
-        
-        # EXECUTIA SIMPLEX
         XB_f, Z_f, Dj_f, baza_f, TS_f = ruleaza_iteratii_simplex(TS_init, b_lucru.copy(), Cj_std, baza_init, nume_v, 'MAX')
         
-        # VALIDAREA SOLUTIEI
-        validare_solutie(XB_f, Z_f, Dj_f, baza_f, TS_f, A_prim_init, b_backup, c_pl, mapare, nume_v, 'MAX')
-        
-        st.markdown("<h3 style='color: #CE93D8;'>4. Pasul 3: Rezultatele Finale (Interpretare)</h3>", unsafe_allow_html=True)
+        # --- PASUL 3: Solutia ---
+        st.markdown("<h3 style='color: #CE93D8;'>4. Pasul 3: Rezultatele Finale</h3>", unsafe_allow_html=True)
         
         v_joc = (1 / Z_f) - k 
         
@@ -164,3 +171,45 @@ if st.button("🚀 Calculează Soluția Optimă", type="primary", use_container_
         res2.write([f(x) for x in X_opt])
         res3.write("**Strategii Mixte B ($Y_0$):**")
         res3.write([f(y) for y in Y_opt])
+        
+        # --- PASUL 4: VERIFICAREA SPECIFICA TEORIEI JOCURILOR ---
+        st.markdown("---")
+        st.markdown("<h3 style='color: #CE93D8; text-align: center;'>✨ Verificări și Validare Finală (Teoria Jocurilor) ✨</h3>", unsafe_allow_html=True)
+        st.markdown("---")
+        
+        val_col1, val_col2 = st.columns(2)
+        
+        with val_col1:
+            st.markdown("**V1. Suma probabilităților este 1**")
+            sum_x = sum(X_opt)
+            sum_y = sum(Y_opt)
+            if abs(sum_x - 1) < 1e-5: st.success(f"✅ $\sum x_i = {f(sum_x)}$")
+            else: st.error(f"❌ $\sum x_i = {f(sum_x)}$")
+            
+            if abs(sum_y - 1) < 1e-5: st.success(f"✅ $\sum y_j = {f(sum_y)}$")
+            else: st.error(f"❌ $\sum y_j = {f(sum_y)}$")
+
+            st.markdown("**V2. Încadrarea valorii jocului ($v_1 \le v \le v_2$)**")
+            if v1 - 1e-5 <= v_joc <= v2 + 1e-5:
+                st.success(f"✅ ${f(v1)} \le {f(v_joc)} \le {f(v2)}$")
+            else:
+                st.error(f"❌ Valoarea {f(v_joc)} nu este între {f(v1)} și {f(v2)}")
+
+        with val_col2:
+            st.markdown("**V3. Optim pentru Jucătorul A ($X_0 \cdot Q \ge v$)**")
+            # Inmultim vectorul X0 cu matricea initiala Q
+            castig_A = np.dot(X_opt, Q)
+            st.write(f"Câștiguri așteptate: $[" + ", ".join([f(val) for val in castig_A]) + "]$")
+            if all(val >= v_joc - 1e-5 for val in castig_A):
+                st.success(f"✅ Toate valorile sunt $\ge {f(v_joc)}$")
+            else:
+                st.error(f"❌ Există valori $< {f(v_joc)}")
+
+            st.markdown("**V4. Optim pentru Jucătorul B ($Q \cdot Y_0^T \le v$)**")
+            # Inmultim matricea initiala Q cu vectorul coloana Y0
+            pierdere_B = np.dot(Q, Y_opt)
+            st.write(f"Pierderi așteptate: $[" + ", ".join([f(val) for val in pierdere_B]) + "]$")
+            if all(val <= v_joc + 1e-5 for val in pierdere_B):
+                st.success(f"✅ Toate valorile sunt $\le {f(v_joc)}$")
+            else:
+                st.error(f"❌ Există valori $> {f(v_joc)}")

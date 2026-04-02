@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from simplex import f, pregateste_forma_standard, ruleaza_iteratii_simplex, validare_solutie
 
-# --- CONFIGURARE PAGINA & DESIGN ---
+# --- CONFIGURARE PAGINA SI DESIGN ---
 st.set_page_config(page_title="Teoria Jocurilor", layout="wide")
 
 st.markdown("""
@@ -46,7 +46,7 @@ st.markdown("""
 
 st.markdown('''
     <div class="title-box">
-        <p class="title-text">Joc de 2 persoane cu sumă nulă 💻 🎲</p>
+        <p class="title-text">💻🎲 Joc de 2 persoane cu sumă nulă 🎲💻 </p>
     </div>
 ''', unsafe_allow_html=True)
 
@@ -64,7 +64,7 @@ st.markdown('''
 
 st.divider()
 
-# --- LOGICĂ TEORIA JOCURILOR ---
+# --- LOGICA TEORIA JOCURILOR ---
 
 def analiza_strategii_pure(Q):
     alpha = np.min(Q, axis=1)
@@ -78,16 +78,16 @@ def analiza_strategii_pure(Q):
         return True, v1, (idx_linie, idx_col), alpha, beta
     return False, (v1, v2), None, alpha, beta
 
-# --- INTERFAȚĂ UTILIZATOR ---
+# --- INTERFATA UTILIZATOR ---
 
 st.sidebar.header("⚙️ Configurare Joc")
 n_linii = st.sidebar.number_input("Strategii Jucător A (Linii)", 2, 6, 3)
 n_coloane = st.sidebar.number_input("Strategii Jucător B (Coloane)", 2, 6, 3)
 
 st.markdown("<h3 style='color: #CE93D8;'>1. Definirea Matricei de Câștig Q</h3>", unsafe_allow_html=True)
-st.info("Introduceți valorile matricei. Am preîncărcat problema implicită din curs.")
+st.info("Introduceți valorile matricei.")
 
-# Incarcare Matrice Default ceruta de tine
+#matrice default pb curs
 matrice_default = [
     [1, 1, 2],
     [3, 2, 1],
@@ -154,7 +154,7 @@ if st.button("🚀 Calculează Soluția Optimă", type="primary", use_container_
         
         XB_f, Z_f, Dj_f, baza_f, TS_f = ruleaza_iteratii_simplex(TS_init, b_lucru.copy(), Cj_std, baza_init, nume_v, 'MAX')
         
-        # --- VALIDARE 1: Programare Liniară (din simplex.py) ---
+        # --- VALIDARE 1: Programare Liniara (din simplex.py) ---
         validare_solutie(XB_f, Z_f, Dj_f, baza_f, TS_f, A_prim_init, b_backup, c_pl, mapare, nume_v, 'MAX')
         
         # --- PASUL 3: Solutia Teoria Jocurilor ---
@@ -181,7 +181,7 @@ if st.button("🚀 Calculează Soluția Optimă", type="primary", use_container_
         
         # --- VALIDARE 2: Specifica Teoriei Jocurilor ---
         st.markdown("---")
-        st.markdown("<h3 style='color: #CE93D8; text-align: center;'>✨ Verificări Specifice (Teoria Jocurilor) ✨</h3>", unsafe_allow_html=True)
+        st.markdown("<h3 style='color: #CE93D8; text-align: center;'> Verificări Specifice (Teoria Jocurilor) </h3>", unsafe_allow_html=True)
         st.markdown("---")
         
         val_col1, val_col2 = st.columns(2)

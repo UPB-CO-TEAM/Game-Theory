@@ -1,7 +1,7 @@
 import streamlit as st
 import numpy as np
 import pandas as pd
-from simplex_core import f, pregateste_forma_standard, ruleaza_simplex_interactiv
+from simplex import f, pregateste_forma_standard, ruleaza_simplex_interactiv
 
 # --- LOGICĂ TEORIA JOCURILOR (Conform curs/seminar) ---
 

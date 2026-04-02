@@ -1,7 +1,7 @@
 import streamlit as st
 import numpy as np
 import pandas as pd
-from simplex import f, pregateste_forma_standard, ruleaza_iteratii_simplex
+from simplex import f, pregateste_forma_standard, ruleaza_iteratii_simplex, validare_solutie
 
 # --- CONFIGURARE PAGINA & DESIGN ---
 st.set_page_config(page_title="Teoria Jocurilor", layout="wide")
@@ -148,10 +148,17 @@ if st.button("🚀 Calculează Soluția Optimă", type="primary", use_container_
         
         TS_init, b_lucru, Cj_std, nume_v, baza_init, mapare = pregateste_forma_standard(A_pl, b_pl, c_pl, semne, tip_x, 'MAX', 1000)
         
+        # Salvam copii pentru validarea Simplex (matricea S * XB)
+        A_prim_init = TS_init.copy()
+        b_backup = b_lucru.copy()
+        
         XB_f, Z_f, Dj_f, baza_f, TS_f = ruleaza_iteratii_simplex(TS_init, b_lucru.copy(), Cj_std, baza_init, nume_v, 'MAX')
         
-        # --- PASUL 3: Solutia ---
-        st.markdown("<h3 style='color: #CE93D8;'>4. Pasul 3: Rezultatele Finale</h3>", unsafe_allow_html=True)
+        # --- VALIDARE 1: Programare Liniară (din simplex.py) ---
+        validare_solutie(XB_f, Z_f, Dj_f, baza_f, TS_f, A_prim_init, b_backup, c_pl, mapare, nume_v, 'MAX')
+        
+        # --- PASUL 3: Solutia Teoria Jocurilor ---
+        st.markdown("<h3 style='color: #CE93D8;'>4. Pasul 3: Rezultatele Finale (Interpretare)</h3>", unsafe_allow_html=True)
         
         v_joc = (1 / Z_f) - k 
         
@@ -172,9 +179,9 @@ if st.button("🚀 Calculează Soluția Optimă", type="primary", use_container_
         res3.write("**Strategii Mixte B ($Y_0$):**")
         res3.write([f(y) for y in Y_opt])
         
-      # --- PASUL 4: VERIFICAREA SPECIFICA TEORIEI JOCURILOR ---
+        # --- VALIDARE 2: Specifica Teoriei Jocurilor ---
         st.markdown("---")
-        st.markdown("<h3 style='color: #CE93D8; text-align: center;'>✨ Verificări și Validare Finală (Teoria Jocurilor) ✨</h3>", unsafe_allow_html=True)
+        st.markdown("<h3 style='color: #CE93D8; text-align: center;'>✨ Verificări Specifice (Teoria Jocurilor) ✨</h3>", unsafe_allow_html=True)
         st.markdown("---")
         
         val_col1, val_col2 = st.columns(2)

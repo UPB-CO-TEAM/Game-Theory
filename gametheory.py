@@ -85,7 +85,7 @@ if st.button("🚀 Calculează Soluția Optimă"):
         
         # Pregătire și Execuție Simplex
         TS_init, b_lucru, Cj_std, nume_v, baza_init, mapare = pregateste_forma_standard(A_pl, b_pl, c_pl, semne, tip_x, 'MAX', 1000)
-        XB_f, Z_f, Dj_f, baza_f, TS_f = ruleaza_simplex_interactiv(TS_init.T, b_lucru, Cj_std, baza_init, nume_v, 'MAX', st)
+        XB_f, Z_f, Dj_f, baza_f, TS_f = ruleaza_simplex_interactiv(TS_init, b_lucru, Cj_std, baza_init, nume_v, 'MAX', st)
         
         # PASUL 3: Recuperarea soluției finale
         st.write("### 4. Pasul 3: Rezultatele Finale (Interpretare)")

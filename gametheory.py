@@ -97,7 +97,7 @@ if st.button("🚀 Calculează Soluția Optimă", type="primary", use_container_
         k = 0
         if np.min(Q) <= 0:
             k = abs(np.min(Q)) + 1
-            st.write(f"**Regulă:** Translație matrice pentru v > 0: $k = {k}$")
+           #Regula: Translație matrice pentru v > 0: k=abs(Q)+1
         
         Q_ajustat = Q + k
         
@@ -137,7 +137,7 @@ if st.button("🚀 Calculează Soluția Optimă", type="primary", use_container_
         
         # --- PASUL 4: Validare Teoria Jocurilor (V3: v = X0 * Q * Y0^T) ---
         st.markdown("---")
-        st.markdown("<h3 style='color: #CE93D8; text-align: center;'>✨ Verificări Specifice ✨</h3>", unsafe_allow_html=True)
+        st.markdown("<h3 style='color: #CE93D8; text-align: center;'> Verificări Specifice </h3>", unsafe_allow_html=True)
         
         val_col1, val_col2 = st.columns(2)
         with val_col1:

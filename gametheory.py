@@ -124,7 +124,7 @@ if st.button("🚀 Calculează Soluția Optimă", type="primary", use_container_
             st.latex(r"\begin{cases} " + r" \\ ".join(restr_plb) + r" \end{cases}") 
             st.latex(rf"y_j \ge 0, \quad j=\overline{{1,{n_coloane}}}") 
 
-        st.info("💡 **Decizie:** Se va rezolva problema **PLB (MAX)** folosind Algoritmul Simplex Primal (ASP).")
+        st.info(" **Convenție:** Se va rezolva problema **PLB (MAX)** folosind Algoritmul Simplex Primal (ASP).")
         st.markdown("---")
 
         st.markdown("<h3 style='color: #CE93D8;'> Rezolvarea prin Algoritmul Simplex Primal (pentru PLB)</h3>", unsafe_allow_html=True)

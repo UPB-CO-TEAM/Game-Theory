@@ -21,12 +21,12 @@
 
 A system for solving **two-person zero-sum strategic games** using a hybrid approach that combines classical matrix analysis with Linear Programming optimization. The application determines optimal strategies (pure or mixed) and the game value, providing a didactic perspective on duality in operations research.
 
-🔗 **[Open Application]()**
+🔗 **[Open Game Theory Application](https://game-theory-project-ildd.streamlit.app/)**
 
 > **Note:** All in-code comments are written in **Romanian**.
 
 > **Dependency:** This project integrates the Primal Simplex engine developed in a companion project.  
-> 🔗 **[Primal Simplex Algorithm — Application](https://game-theory-project-ildd.streamlit.app/)**  
+> 🔗 **[Primal Simplex Algorithm — Application](https://algoritm-simplex-ildd.streamlit.app/)**  
 > The Simplex computation module (`simplex.py`) is directly reused here to solve the dual Linear Programming models.
 
 ---
